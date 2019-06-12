@@ -44,7 +44,7 @@ int alarmMinutes = 0;
 uint8_t alarmSeconds = 0;
 long totalAlarmSeconds = 0;
 
-ClockModule::ClockModule()
+void initClock()
 {
     digitDisplay.begin(0x70);
     RTC.init(5, 6, 7);
@@ -56,8 +56,9 @@ ClockModule::ClockModule()
     saveTime();
 }
 
-void ClockModule::update()
+void update()
 {
+
     if (state == SHOWING_TIME)
     {
         printTime();
@@ -80,7 +81,7 @@ void ClockModule::update()
     }
 }
 
-void ClockModule::rotateTimeSetting()
+void rotateTimeSetting()
 {
     if (state != SETTING_TIME)
     {
@@ -104,7 +105,7 @@ void ClockModule::rotateTimeSetting()
     }
 }
 
-void ClockModule::executeAlarmAction()
+void executeAlarmAction()
 {
     if (state == SETTING_ALARM)
     {
@@ -116,7 +117,7 @@ void ClockModule::executeAlarmAction()
     }
 }
 
-void ClockModule::changeTime(uint8_t value)
+void changeTime(uint8_t value)
 {
     if (value != 0 && state == SHOWING_TIME)
     {
@@ -137,7 +138,7 @@ void ClockModule::changeTime(uint8_t value)
     }
 }
 
-void ClockModule::increaseTime()
+void increaseTime()
 {
     if (state == SETTING_TIME)
     {
@@ -179,7 +180,7 @@ void ClockModule::increaseTime()
     }
 }
 
-void ClockModule::decreaseTime()
+void decreaseTime()
 {
     if (state == SETTING_TIME)
     {
@@ -221,7 +222,7 @@ void ClockModule::decreaseTime()
     }
 }
 
-void ClockModule::printTime()
+void printTime()
 {
     if (blink)
     {
@@ -247,7 +248,7 @@ void ClockModule::printTime()
     }
 }
 
-void ClockModule::printSettingTime()
+void printSettingTime()
 {
     if (blink)
     {
@@ -271,7 +272,7 @@ void ClockModule::printSettingTime()
     }
 }
 
-void ClockModule::printAlarmSettingTime()
+void printAlarmSettingTime()
 {
     updateAlarmVariables();
 
@@ -284,7 +285,7 @@ void ClockModule::printAlarmSettingTime()
     digitDisplay.writeDisplay();
 }
 
-void ClockModule::printAlarmTime()
+void printAlarmTime()
 {
     updateAlarm();
     updateAlarmVariables();
@@ -313,7 +314,7 @@ void ClockModule::printAlarmTime()
     digitDisplay.writeDisplay();
 }
 
-void ClockModule::printBlinkingTime()
+void printBlinkingTime()
 {
     int blinkTime = millis() - lastBlinkAt;
     if (blinkTime < 500)
@@ -341,13 +342,13 @@ void ClockModule::printBlinkingTime()
     lastBlinkAt = millis();
 }
 
-void ClockModule::startBlink()
+void startBlink()
 {
     lastBlinkAt = millis();
     blink = true;
 }
 
-void ClockModule::blinkHours()
+void blinkHours()
 {
     int blinkTime = millis() - lastBlinkAt;
     if (blinkTime > 500)
@@ -362,7 +363,7 @@ void ClockModule::blinkHours()
     digitDisplay.writeDisplay();
 }
 
-void ClockModule::blinkMinutes()
+void blinkMinutes()
 {
     int blinkTime = millis() - lastBlinkAt;
     if (blinkTime > 500)
@@ -377,7 +378,7 @@ void ClockModule::blinkMinutes()
     digitDisplay.writeDisplay();
 }
 
-void ClockModule::blinkAll()
+void blinkAll()
 {
     int blinkTime = millis() - lastBlinkAt;
     if (blinkTime > 500)
@@ -391,7 +392,7 @@ void ClockModule::blinkAll()
 
 int lastAlarmUpdateSeconds = 0;
 bool firstAlarm = false;
-void ClockModule::startAlarm()
+void startAlarm()
 {
     lastAlarmUpdateSeconds = totalSeconds;
     state = RUNNING_ALARM;
@@ -400,7 +401,7 @@ void ClockModule::startAlarm()
     int secondsDifference = totalSeconds - lastAlarmUpdateSeconds;
 }
 
-void ClockModule::updateAlarm()
+void updateAlarm()
 {
     updateTimeVariables();
 
@@ -432,15 +433,16 @@ void ClockModule::updateAlarm()
     }
 }
 
-void ClockModule::saveTime()
+void saveTime()
 {
     // Sunday, September 25, 2018 at 13:30:50.
     RTCTime t(2018, 9, 25, hours, minutes, 00, RTCTime::kTuesday);
     RTC.time(t);
 }
 
-void ClockModule::updateTimeVariables()
+void updateTimeVariables()
 {
+    Serial.println("updating");
     RTCTime t = RTC.time();
 
     hours = t.hr;
@@ -454,16 +456,17 @@ void ClockModule::updateTimeVariables()
     getDigits(t.hr, hoursDigit1, hoursDigit2);
     getDigits(t.min, minutesDigit1, minutesDigit2);
     getDigits(t.sec, secondsDigit1, secondsDigit2);
+    Serial.println("updated");
 }
 
-void ClockModule::updateAlarmVariables()
+void updateAlarmVariables()
 {
     getDigits(alarmHours, hoursDigit1, hoursDigit2);
     getDigits(alarmMinutes, minutesDigit1, minutesDigit2);
     getDigits(alarmSeconds, secondsDigit1, secondsDigit2);
 }
 
-void ClockModule::getDigits(uint8_t number, uint8_t &digit1, uint8_t &digit2)
+void getDigits(uint8_t number, uint8_t &digit1, uint8_t &digit2)
 {
     digit2 = number % 10;
 
