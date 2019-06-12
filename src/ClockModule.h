@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <stdio.h>
-#include "RtcModule.h"
+#include <DS1302.h>
 #include <Time.h>
 #include "Timer.h"
 #include <Wire.h>

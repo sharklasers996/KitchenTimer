@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <stdio.h>
-#include "RtcModule.h"
+#include <DS1302.h>
 #include <Wire.h>
 #include "Adafruit_LEDBackpack.h"
 #include "Adafruit_GFX.h"
@@ -22,7 +22,7 @@ uint8_t timeSetting = TIMESETTING_NONE;
 Adafruit_7segment digitDisplay = Adafruit_7segment();
 
 // CE (RST), IO (DATA), CLK
-RtcModule RTC = RtcModule();
+DS1302 RTC(5, 6, 7);
 
 int hours = 0;
 int minutes = 0;
@@ -47,7 +47,7 @@ long totalAlarmSeconds = 0;
 void initClock()
 {
     digitDisplay.begin(0x70);
-    RTC.init(5, 6, 7);
+    //   RTC.init(5, 6, 7);
     RTC.writeProtect(false);
     RTC.halt(false);
 
@@ -436,14 +436,14 @@ void updateAlarm()
 void saveTime()
 {
     // Sunday, September 25, 2018 at 13:30:50.
-    RTCTime t(2018, 9, 25, hours, minutes, 00, RTCTime::kTuesday);
+    Time t(2018, 9, 25, hours, minutes, 00, Time::kTuesday);
     RTC.time(t);
 }
 
 void updateTimeVariables()
 {
     Serial.println("updating");
-    RTCTime t = RTC.time();
+    Time t = RTC.time();
 
     hours = t.hr;
     minutes = t.min;
