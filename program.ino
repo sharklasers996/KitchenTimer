@@ -8,7 +8,6 @@
 #include <SPI.h>
 
 #include "./src/RotaryEncoder.h"
-#include "./src/RtcModule.h"
 #include "./src/PushButton.h"
 #include "./src/ClockModule.h"
 #include "./src/LedController.h"
