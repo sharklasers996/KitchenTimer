@@ -11,6 +11,8 @@
 #include "./src/PushButton.h"
 #include "./src/ClockModule.h"
 #include "./src/LedController.h"
+#include "./src/PhotoResistorPushButton.h"
+#include "./src/LedActiveAnimator.h"
 
 #define ROTARY_PIN1 0
 #define ROTARY_PIN2 A3
@@ -26,8 +28,10 @@ LedController ledController(LED_LATCH_PIN, LED_CLOCK_PIN, LED_DATA_PIN);
 RotaryEncoder rotaryEncoder(ROTARY_PIN1, ROTARY_PIN2);
 
 PushButton timeButton(TIME_BUTTON);
-PushButton powerButton(POWER_BUTTON);
 PushButton actionButton(ACTION_BUTTON);
+PhotoResistorPushButton prPowerButton(POWER_BUTTON);
+
+LedActiveAnimator activeAnimator;
 
 TMRpcm tmrpcm;
 
@@ -40,6 +44,11 @@ void setup()
 
     SD.begin(SD_PIN);
     initClock();
+
+    pinMode(8, OUTPUT);
+    digitalWrite(8, HIGH);
+
+    activeAnimator.init(ledController);
 }
 
 void loop()
@@ -51,43 +60,53 @@ void testingTimerMethod()
 {
     if (timeButton.isPushed())
     {
+        Serial.println("time!");
         rotateTimeSetting();
     }
 
-    if (powerButton.isPushed())
+    if (prPowerButton.isPushed())
     {
         Serial.println("power!");
     }
 
+    if (prPowerButton.isDark())
+    {
+        Serial.println("dark!");
+    }
+
     if (actionButton.isPushed())
     {
+        Serial.print("action at ");
+        Serial.println(millis());
+
         executeAlarmAction();
     }
 
     uint8_t value = rotaryEncoder.read();
     changeTime(value);
-    update();
+    updateClockModule();
 
-    rowAnim();
+    activeAnimator.rowAnim();
+    //rowAnim();
 }
 
-uint8_t rowA = 1;
-int lastRowLight = millis();
+// uint8_t rowA = 1;
+// long lastRowLight = millis();
 
-void rowAnim()
-{
-    int duration = millis() - lastRowLight;
-    if (duration < 500)
-    {
-        return;
-    }
+// void rowAnim()
+// {
+//     int duration = millis() - lastRowLight;
+//     if (duration < 500)
+//     {
+//         return;
+//     }
+//     Serial.println(getclockModuleState());
+//     lastRowLight = millis();
+//     ledController.turnOnRow(rowA);
+//     rowA++;
 
-    lastRowLight = millis();
-    ledController.turnOnRow(rowA);
-    rowA++;
-
-    if (rowA > 10)
-    {
-        rowA = 0;
-    }
-}
+//     if (rowA > 10)
+//     {
+//         rowA = 0;
+//     }
+// }

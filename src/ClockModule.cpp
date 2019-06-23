@@ -16,7 +16,7 @@
 #define TIMESETTING_MINUTE 1
 #define TIMESETTING_NONE 2
 
-uint8_t state = SHOWING_TIME;
+uint8_t clockModuleState = SHOWING_TIME;
 uint8_t timeSetting = TIMESETTING_NONE;
 
 Adafruit_7segment digitDisplay = Adafruit_7segment();
@@ -26,56 +26,61 @@ DS1302 RTC(5, 6, 7);
 
 int hours = 0;
 int minutes = 0;
-uint8_t seconds = 0;
+int seconds = 0;
 int totalSeconds = 0;
 
-uint8_t hoursDigit1 = 0;
-uint8_t hoursDigit2 = 0;
-uint8_t minutesDigit1 = 0;
-uint8_t minutesDigit2 = 0;
-uint8_t secondsDigit1 = 0;
-uint8_t secondsDigit2 = 0;
+int hoursDigit1 = 0;
+int hoursDigit2 = 0;
+int minutesDigit1 = 0;
+int minutesDigit2 = 0;
+int secondsDigit1 = 0;
+int secondsDigit2 = 0;
 
 bool blink = false;
-int lastBlinkAt = millis();
+long lastBlinkAt = millis();
 
-uint8_t alarmHours = 0;
+int alarmHours = 0;
 int alarmMinutes = 0;
-uint8_t alarmSeconds = 0;
+int alarmSeconds = 0;
 long totalAlarmSeconds = 0;
+
+byte getclockModuleState()
+{
+    return clockModuleState;
+}
 
 void initClock()
 {
     digitDisplay.begin(0x70);
-    //   RTC.init(5, 6, 7);
     RTC.writeProtect(false);
     RTC.halt(false);
+
+    clockModuleState = SHOWING_TIME;
 
     hours = 4;
     minutes = 20;
     saveTime();
 }
 
-void update()
+void updateClockModule()
 {
-
-    if (state == SHOWING_TIME)
+    if (clockModuleState == SHOWING_TIME)
     {
         printTime();
     }
-    else if (state == SETTING_TIME)
+    else if (clockModuleState == SETTING_TIME)
     {
         printSettingTime();
     }
-    else if (state == SETTING_ALARM)
+    else if (clockModuleState == SETTING_ALARM)
     {
         printAlarmSettingTime();
     }
-    else if (state == RUNNING_ALARM)
+    else if (clockModuleState == RUNNING_ALARM)
     {
         printAlarmTime();
     }
-    else if (state == FINISHED_ALARM)
+    else if (clockModuleState == FINISHED_ALARM)
     {
         printBlinkingTime();
     }
@@ -83,10 +88,15 @@ void update()
 
 void rotateTimeSetting()
 {
-    if (state != SETTING_TIME)
+    if (clockModuleState == RUNNING_ALARM)
+    {
+        return;
+    }
+
+    if (clockModuleState != SETTING_TIME)
     {
         timeSetting = TIMESETTING_HOUR;
-        state = SETTING_TIME;
+        clockModuleState = SETTING_TIME;
         startBlink();
         return;
     }
@@ -98,7 +108,7 @@ void rotateTimeSetting()
         startBlink();
         break;
     case TIMESETTING_MINUTE:
-        state = SHOWING_TIME;
+        clockModuleState = SHOWING_TIME;
         startBlink();
         saveTime();
         break;
@@ -107,21 +117,25 @@ void rotateTimeSetting()
 
 void executeAlarmAction()
 {
-    if (state == SETTING_ALARM)
+    if (clockModuleState == SETTING_ALARM)
     {
         startAlarm();
     }
-    else if (state == FINISHED_ALARM)
+    else if (clockModuleState == FINISHED_ALARM)
     {
-        state = SHOWING_TIME;
+        clockModuleState = SHOWING_TIME;
+    }
+    else if (clockModuleState == RUNNING_ALARM)
+    {
+        clockModuleState = SHOWING_TIME;
     }
 }
 
 void changeTime(uint8_t value)
 {
-    if (value != 0 && state == SHOWING_TIME)
+    if (value != 0 && clockModuleState == SHOWING_TIME)
     {
-        state = SETTING_ALARM;
+        clockModuleState = SETTING_ALARM;
         alarmHours = 0;
         alarmMinutes = 0;
         alarmSeconds = 0;
@@ -140,7 +154,7 @@ void changeTime(uint8_t value)
 
 void increaseTime()
 {
-    if (state == SETTING_TIME)
+    if (clockModuleState == SETTING_TIME)
     {
         if (timeSetting == TIMESETTING_HOUR)
         {
@@ -162,7 +176,7 @@ void increaseTime()
         getDigits(hours, hoursDigit1, hoursDigit2);
         getDigits(minutes, minutesDigit1, minutesDigit2);
     }
-    else if (state == SETTING_ALARM)
+    else if (clockModuleState == SETTING_ALARM)
     {
         alarmMinutes++;
         if (alarmMinutes >= 60)
@@ -182,7 +196,7 @@ void increaseTime()
 
 void decreaseTime()
 {
-    if (state == SETTING_TIME)
+    if (clockModuleState == SETTING_TIME)
     {
         if (timeSetting == TIMESETTING_HOUR)
         {
@@ -204,7 +218,7 @@ void decreaseTime()
         getDigits(hours, hoursDigit1, hoursDigit2);
         getDigits(minutes, minutesDigit1, minutesDigit2);
     }
-    else if (state == SETTING_ALARM)
+    else if (clockModuleState == SETTING_ALARM)
     {
         alarmMinutes--;
         if (alarmMinutes < 0)
@@ -316,7 +330,7 @@ void printAlarmTime()
 
 void printBlinkingTime()
 {
-    int blinkTime = millis() - lastBlinkAt;
+    long blinkTime = millis() - lastBlinkAt;
     if (blinkTime < 500)
     {
         return;
@@ -350,7 +364,7 @@ void startBlink()
 
 void blinkHours()
 {
-    int blinkTime = millis() - lastBlinkAt;
+    long blinkTime = millis() - lastBlinkAt;
     if (blinkTime > 500)
     {
         blink = false;
@@ -365,7 +379,7 @@ void blinkHours()
 
 void blinkMinutes()
 {
-    int blinkTime = millis() - lastBlinkAt;
+    long blinkTime = millis() - lastBlinkAt;
     if (blinkTime > 500)
     {
         blink = false;
@@ -380,7 +394,7 @@ void blinkMinutes()
 
 void blinkAll()
 {
-    int blinkTime = millis() - lastBlinkAt;
+    long blinkTime = millis() - lastBlinkAt;
     if (blinkTime > 500)
     {
         blink = false;
@@ -390,12 +404,12 @@ void blinkAll()
     digitDisplay.writeDisplay();
 }
 
-int lastAlarmUpdateSeconds = 0;
+long lastAlarmUpdateSeconds = 0;
 bool firstAlarm = false;
 void startAlarm()
 {
     lastAlarmUpdateSeconds = totalSeconds;
-    state = RUNNING_ALARM;
+    clockModuleState = RUNNING_ALARM;
 
     firstAlarm = true;
     int secondsDifference = totalSeconds - lastAlarmUpdateSeconds;
@@ -429,7 +443,7 @@ void updateAlarm()
     {
         lastBlinkAt = millis() + 1000;
         blink = true;
-        state = FINISHED_ALARM;
+        clockModuleState = FINISHED_ALARM;
     }
 }
 
@@ -442,7 +456,6 @@ void saveTime()
 
 void updateTimeVariables()
 {
-    Serial.println("updating");
     Time t = RTC.time();
 
     hours = t.hr;
@@ -456,7 +469,6 @@ void updateTimeVariables()
     getDigits(t.hr, hoursDigit1, hoursDigit2);
     getDigits(t.min, minutesDigit1, minutesDigit2);
     getDigits(t.sec, secondsDigit1, secondsDigit2);
-    Serial.println("updated");
 }
 
 void updateAlarmVariables()
@@ -466,7 +478,7 @@ void updateAlarmVariables()
     getDigits(alarmSeconds, secondsDigit1, secondsDigit2);
 }
 
-void getDigits(uint8_t number, uint8_t &digit1, uint8_t &digit2)
+void getDigits(int number, int &digit1, int &digit2)
 {
     digit2 = number % 10;
 

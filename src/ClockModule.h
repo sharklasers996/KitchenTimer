@@ -7,8 +7,10 @@
 #include "Adafruit_LEDBackpack.h"
 #include "Adafruit_GFX.h"
 
+byte getclockModuleState();
+
 void initClock();
-void update();
+void updateClockModule();
 void rotateTimeSetting();
 void executeAlarmAction();
 void changeTime(uint8_t value);
@@ -29,4 +31,4 @@ void updateAlarm();
 void saveTime();
 void updateTimeVariables();
 void updateAlarmVariables();
-void getDigits(uint8_t number, uint8_t &digit1, uint8_t &digit2);
+void getDigits(int number, int &digit1, int &digit2);

@@ -8,5 +8,5 @@ public:
 
 private:
     int _pin;
-    int _lastReadAt;
+    long _lastReadAt;
 };

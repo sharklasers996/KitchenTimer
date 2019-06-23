@@ -5,6 +5,10 @@ int _latchPin;
 int _clockPin;
 int _dataPin;
 
+LedController::LedController()
+{
+}
+
 LedController::LedController(int latchPin, int clockPin, int dataPin)
 {
     _latchPin = latchPin;

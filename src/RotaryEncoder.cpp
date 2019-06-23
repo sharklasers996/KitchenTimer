@@ -33,7 +33,7 @@ int RotaryEncoder::read()
     int newQuadValue = readQuadValue();
     int quadDirection = getQuadDirection(_lastQuadValue, newQuadValue);
 
-    int duration = millis() - _lastStepAt;
+    long duration = millis() - _lastStepAt;
     if (duration <= 5)
     {
         return 0;

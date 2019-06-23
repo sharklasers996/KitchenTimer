@@ -2,7 +2,7 @@
 #include "PushButton.h"
 
 int _pin;
-int _lastReadAt;
+long _lastReadAt;
 
 PushButton::PushButton(int pin)
 {
@@ -14,7 +14,7 @@ PushButton::PushButton(int pin)
 
 bool PushButton::isPushed()
 {
-    int readTime = millis() - _lastReadAt;
+    long readTime = millis() - _lastReadAt;
     if (readTime < 250)
     {
         return false;
