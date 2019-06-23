@@ -8,9 +8,10 @@ class LedActiveAnimator
 public:
     void init(LedController controller);
     void rowAnim();
-    void animateAlarmSetting(long seconds);
-    void animateAlarmElapsed(long current, long total);
-    void animate();
+    void animateAlarmSetting();
+    void animateAlarmElapsed();
+    void updateAlarmSetting(long seconds);
+    void updateAlarmElapsedSeconds(long current, long total);
 
 private:
     long lastRowLight;

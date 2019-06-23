@@ -15,7 +15,12 @@ void LedActiveAnimator::init(LedController controller)
     _controller = controller;
 }
 
-void LedActiveAnimator::animateAlarmSetting(long seconds)
+void LedActiveAnimator::animateAlarmSetting()
+{
+    _controller.turnOnRow(_alarmSettingAnimationRow);
+}
+
+void LedActiveAnimator::updateAlarmSetting(long seconds)
 {
     long secondsDifference = seconds - _lastAlarmSettingSeconds;
     _lastAlarmSettingSeconds = seconds;
@@ -38,13 +43,11 @@ void LedActiveAnimator::animateAlarmSetting(long seconds)
     {
         _alarmSettingAnimationRow = 1;
     }
-
-    _controller.turnOnRow(_alarmSettingAnimationRow);
 }
 
 byte ledCountToTurnOn = 0;
 
-void LedActiveAnimator::animate()
+void LedActiveAnimator::animateAlarmElapsed()
 {
     if (ledCountToTurnOn == 0)
     {
@@ -86,7 +89,7 @@ void LedActiveAnimator::animate()
     }
 }
 
-void LedActiveAnimator::animateAlarmElapsed(long current, long total)
+void LedActiveAnimator::updateAlarmElapsedSeconds(long current, long total)
 {
     double ledsPerSecond = 60 / (double)total;
     double secondsPassed = total - current;

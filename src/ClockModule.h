@@ -12,6 +12,14 @@ typedef void (*GetSeconds)(long seconds);
 typedef void (*GetCurrentAndDuration)(long current, long duration);
 #endif
 
+#ifndef __CLOCK_STATES
+#define SETTING_TIME 0
+#define SHOWING_TIME 3
+#define SETTING_ALARM 4
+#define RUNNING_ALARM 5
+#define FINISHED_ALARM 6
+#endif
+
 void onAlarmSettingSecondsChanged(GetSeconds callback);
 void OnAlarmSecondsElapsed(GetCurrentAndDuration callback);
 

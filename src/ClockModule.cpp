@@ -6,12 +6,6 @@
 #include "Adafruit_GFX.h"
 #include "ClockModule.h"
 
-#define SETTING_TIME 0
-#define SHOWING_TIME 3
-#define SETTING_ALARM 4
-#define RUNNING_ALARM 5
-#define FINISHED_ALARM 6
-
 #define TIMESETTING_HOUR 0
 #define TIMESETTING_MINUTE 1
 #define TIMESETTING_NONE 2

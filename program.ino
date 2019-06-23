@@ -41,6 +41,17 @@ typedef void (*GetSeconds)(long seconds);
 typedef void (*GetCurrentAndDuration)(long current, long duration);
 #endif
 
+#ifndef __CLOCK_STATES
+#define __CLOCK_STATES
+
+#define SETTING_TIME 0
+#define SHOWING_TIME 3
+#define SETTING_ALARM 4
+#define RUNNING_ALARM 5
+#define FINISHED_ALARM 6
+
+#endif
+
 void setup()
 {
     Serial.begin(9600);
@@ -56,7 +67,7 @@ void setup()
 
     activeAnimator.init(ledController);
 
-    onAlarmSettingSecondsChanged(alarmSChanged);
+    onAlarmSettingSecondsChanged(alarmSettingChanged);
     OnAlarmSecondsElapsed(alarmElapsed);
 }
 
@@ -90,15 +101,23 @@ void loop()
     changeTime(value);
     updateClockModule();
 
-    activeAnimator.animate();
+    int s = getclockModuleState();
+    if (s == RUNNING_ALARM)
+    {
+        activeAnimator.animateAlarmElapsed();
+    }
+    else if (s == SETTING_ALARM)
+    {
+        activeAnimator.animateAlarmSetting();
+    }
 }
 
-void alarmSChanged(long s)
+void alarmSettingChanged(long s)
 {
-    activeAnimator.animateAlarmSetting(s);
+    activeAnimator.updateAlarmSetting(s);
 }
 
 void alarmElapsed(long current, long total)
 {
-    activeAnimator.animateAlarmElapsed(current, total);
+    activeAnimator.updateAlarmElapsedSeconds(current, total);
 }
