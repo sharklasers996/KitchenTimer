@@ -8,11 +8,12 @@
 LedController _controller;
 
 long _lastAlarmSettingSeconds = 0;
-byte _alarmSettingAnimationRow = 10;
+byte _alarmSettingAnimationRow;
 
 void LedActiveAnimator::init(LedController controller)
 {
     _controller = controller;
+    _alarmSettingAnimationRow = 1;
 }
 
 void LedActiveAnimator::animateAlarmSetting()
