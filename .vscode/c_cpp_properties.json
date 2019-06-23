@@ -7,7 +7,6 @@
                 "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\**",
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/**/**",
-                "${workspaceFolder}/libraries/**",
                 "c:\\Users\\PonasPx\\Documents\\Arduino\\libraries\\**",
                 "c:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\avr\\include\\**",
                 "c:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\avr\\include\\**",

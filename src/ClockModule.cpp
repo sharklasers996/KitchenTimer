@@ -44,6 +44,19 @@ int alarmMinutes = 0;
 int alarmSeconds = 0;
 long totalAlarmSeconds = 0;
 
+GetSeconds alarmSettingSecondsChanged;
+GetCurrentAndDuration alarmSecondsElapsed;
+
+void onAlarmSettingSecondsChanged(GetSeconds callback)
+{
+    alarmSettingSecondsChanged = callback;
+}
+
+void OnAlarmSecondsElapsed(GetCurrentAndDuration callback)
+{
+    alarmSecondsElapsed = callback;
+}
+
 byte getclockModuleState()
 {
     return clockModuleState;
@@ -191,6 +204,8 @@ void increaseTime()
 
         totalAlarmSeconds = alarmHours * 60 * 60;
         totalAlarmSeconds += alarmMinutes * 60;
+
+        alarmSettingSecondsChanged(totalAlarmSeconds);
     }
 }
 
@@ -233,6 +248,8 @@ void decreaseTime()
 
         totalAlarmSeconds = alarmHours * 60 * 60;
         totalAlarmSeconds += alarmMinutes * 60;
+
+        alarmSettingSecondsChanged(totalAlarmSeconds);
     }
 }
 
@@ -404,12 +421,14 @@ void blinkAll()
     digitDisplay.writeDisplay();
 }
 
+long alarmDuration = 0;
 long lastAlarmUpdateSeconds = 0;
 bool firstAlarm = false;
 void startAlarm()
 {
     lastAlarmUpdateSeconds = totalSeconds;
     clockModuleState = RUNNING_ALARM;
+    alarmDuration = totalAlarmSeconds;
 
     firstAlarm = true;
     int secondsDifference = totalSeconds - lastAlarmUpdateSeconds;
@@ -421,12 +440,13 @@ void updateAlarm()
 
     if (firstAlarm)
     {
-        lastAlarmUpdateSeconds = totalSeconds;
+        lastAlarmUpdateSeconds = totalSeconds + 1;
         firstAlarm = false;
+        alarmSecondsElapsed(alarmDuration, alarmDuration);
     }
 
     int secondsDifference = totalSeconds - lastAlarmUpdateSeconds;
-    if (secondsDifference == 0)
+    if (secondsDifference <= 0)
     {
         return;
     }
@@ -438,6 +458,8 @@ void updateAlarm()
     alarmSeconds = totalAlarmSeconds % 60;
 
     lastAlarmUpdateSeconds = totalSeconds;
+
+    alarmSecondsElapsed(totalAlarmSeconds, alarmDuration);
 
     if (totalAlarmSeconds <= 0)
     {

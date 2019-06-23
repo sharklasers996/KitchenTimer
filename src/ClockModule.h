@@ -7,6 +7,14 @@
 #include "Adafruit_LEDBackpack.h"
 #include "Adafruit_GFX.h"
 
+#ifndef __CLOCK_FUNCTIONS
+typedef void (*GetSeconds)(long seconds);
+typedef void (*GetCurrentAndDuration)(long current, long duration);
+#endif
+
+void onAlarmSettingSecondsChanged(GetSeconds callback);
+void OnAlarmSecondsElapsed(GetCurrentAndDuration callback);
+
 byte getclockModuleState();
 
 void initClock();

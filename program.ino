@@ -35,6 +35,12 @@ LedActiveAnimator activeAnimator;
 
 TMRpcm tmrpcm;
 
+#ifndef __CLOCK_FUNCTIONS
+#define __CLOCK_FUNCTIONS
+typedef void (*GetSeconds)(long seconds);
+typedef void (*GetCurrentAndDuration)(long current, long duration);
+#endif
+
 void setup()
 {
     Serial.begin(9600);
@@ -49,14 +55,12 @@ void setup()
     digitalWrite(8, HIGH);
 
     activeAnimator.init(ledController);
+
+    onAlarmSettingSecondsChanged(alarmSChanged);
+    OnAlarmSecondsElapsed(alarmElapsed);
 }
 
 void loop()
-{
-    testingTimerMethod();
-}
-
-void testingTimerMethod()
 {
     if (timeButton.isPushed())
     {
@@ -86,27 +90,15 @@ void testingTimerMethod()
     changeTime(value);
     updateClockModule();
 
-    activeAnimator.rowAnim();
-    //rowAnim();
+    activeAnimator.animate();
 }
 
-// uint8_t rowA = 1;
-// long lastRowLight = millis();
+void alarmSChanged(long s)
+{
+    activeAnimator.animateAlarmSetting(s);
+}
 
-// void rowAnim()
-// {
-//     int duration = millis() - lastRowLight;
-//     if (duration < 500)
-//     {
-//         return;
-//     }
-//     Serial.println(getclockModuleState());
-//     lastRowLight = millis();
-//     ledController.turnOnRow(rowA);
-//     rowA++;
-
-//     if (rowA > 10)
-//     {
-//         rowA = 0;
-//     }
-// }
+void alarmElapsed(long current, long total)
+{
+    activeAnimator.animateAlarmElapsed(current, total);
+}
