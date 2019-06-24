@@ -4,7 +4,7 @@
 LedController _ledControllerPassive;
 
 #define ANIMATION_COUNT 2
-#define ANIMATION_DELAY 100
+#define ANIMATION_DELAY 200
 
 byte animationIndex;
 bool animationFinished = false;
@@ -128,6 +128,7 @@ void LedPassiveAnimator::animation1()
     }
 }
 
+int animation2LedIndex = 60;
 void LedPassiveAnimator::animation2()
 {
     long duration = durationSinceLastAnimation();
@@ -135,10 +136,10 @@ void LedPassiveAnimator::animation2()
     {
         setLastAnimationAtNow();
 
-        animationLedIndex++;
-        if (animationLedIndex > 60)
+        animation2LedIndex--;
+        if (animation2LedIndex <= 0)
         {
-            animationLedIndex = 0;
+            animation2LedIndex = 60;
             setAnimationAsFinished();
             return;
         }
@@ -146,7 +147,7 @@ void LedPassiveAnimator::animation2()
 
     byte turnedOn = 0;
 
-    byte fullRowsToTurnOn = animationLedIndex / 6;
+    byte fullRowsToTurnOn = animation2LedIndex / 6;
     byte add = 0;
     if (fullRowsToTurnOn > 0)
     {
@@ -159,7 +160,7 @@ void LedPassiveAnimator::animation2()
         _ledControllerPassive.turnOnRow(row);
     }
 
-    if (turnedOn >= animationLedIndex)
+    if (turnedOn >= animation2LedIndex)
     {
         return;
     }
@@ -171,7 +172,7 @@ void LedPassiveAnimator::animation2()
             _ledControllerPassive.turnOnSingle(row, col);
 
             turnedOn++;
-            if (turnedOn >= animationLedIndex)
+            if (turnedOn >= animation2LedIndex)
             {
                 return;
             }
