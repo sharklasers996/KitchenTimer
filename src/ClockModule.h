@@ -28,6 +28,7 @@ typedef void (*AlarmSettingStarted)();
 void onAlarmSettingSecondsChanged(GetSeconds callback);
 void OnAlarmSecondsElapsed(GetCurrentAndDuration callback);
 void OnAlarmSettingStarted(AlarmSettingStarted callback);
+bool isNightTime();
 
 byte getclockModuleState();
 byte getTimeSettingState();

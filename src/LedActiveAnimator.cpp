@@ -128,3 +128,8 @@ void LedActiveAnimator::animateAlarmFinished()
 
     _controller.turnOnRow(_alarmFinishedAnimationRow);
 }
+
+void LedActiveAnimator::reset()
+{
+    _alarmSettingAnimationRow = 1;
+}

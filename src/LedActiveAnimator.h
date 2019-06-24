@@ -12,6 +12,7 @@ public:
     void updateAlarmSetting(long seconds);
     void updateAlarmElapsedSeconds(long current, long total);
     void animateAlarmFinished();
+    void reset();
 
 private:
     LedController _controller;

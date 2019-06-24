@@ -63,12 +63,10 @@ typedef void (*AlarmSettingStarted)();
 
 #endif
 
-#define MACHINE_TURNED_OFF_MANUALLY 1
-#define MACHINE_TURNED_OFF_AUTOMATICALLY 2
-
 #define MACHINE_STATE_ON 1
 #define MACHINE_STATE_OFF 0
 byte machineState;
+bool allowAutomaticPowerSwitch = true;
 
 void setup()
 {
@@ -94,6 +92,8 @@ void setup()
 
 void loop()
 {
+    adjustMachineState();
+
     switch (machineState)
     {
     case MACHINE_STATE_ON:
@@ -110,6 +110,7 @@ void machineOffLoop()
     if (prPowerButton.isPushed())
     {
         machineState = MACHINE_STATE_ON;
+        allowAutomaticPowerSwitch = true;
         return;
     }
 
@@ -123,6 +124,8 @@ void machineOffLoop()
         else
         {
             machineState = MACHINE_STATE_ON;
+            allowAutomaticPowerSwitch = true;
+            executeAlarmAction();
             return;
         }
     }
@@ -147,6 +150,7 @@ void machineOnLoop()
     if (prPowerButton.isPushed())
     {
         machineState = MACHINE_STATE_OFF;
+        allowAutomaticPowerSwitch = false;
         resetAlarm();
         return;
     }
@@ -210,4 +214,27 @@ void alarmElapsed(long current, long total)
 void alarmSettingStarted()
 {
     machineState = MACHINE_STATE_ON;
+    allowAutomaticPowerSwitch = true;
+    activeAnimator.reset();
+}
+
+void adjustMachineState()
+{
+    if (!allowAutomaticPowerSwitch)
+    {
+        return;
+    }
+
+    bool isNight = isNightTime();
+    int clockState = getclockModuleState();
+    bool isDark = prPowerButton.isDark();
+
+    if (isNight && isDark && clockState != RUNNING_ALARM)
+    {
+        machineState = MACHINE_STATE_OFF;
+    }
+    else
+    {
+        machineState = MACHINE_STATE_ON;
+    }
 }

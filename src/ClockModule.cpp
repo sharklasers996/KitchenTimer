@@ -68,6 +68,11 @@ void resetAlarm()
     clockModuleState = SHOWING_TIME;
 }
 
+bool isNightTime()
+{
+    return hours >= 22 || hours < 7;
+}
+
 void initClock()
 {
     digitDisplay.begin(0x70);
