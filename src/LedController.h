@@ -12,6 +12,7 @@ public:
     void turnOnColumn(int column);
     void turnOnRow(int row);
     void turnOnSingle(int row, int column);
+    void turnOff();
 
 private:
     int _latchPin;

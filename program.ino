@@ -13,6 +13,7 @@
 #include "./src/LedController.h"
 #include "./src/PhotoResistorPushButton.h"
 #include "./src/LedActiveAnimator.h"
+#include "./src/LedPassiveAnimator.h"
 
 #define ROTARY_PIN1 0
 #define ROTARY_PIN2 A3
@@ -32,6 +33,7 @@ PushButton actionButton(ACTION_BUTTON);
 PhotoResistorPushButton prPowerButton(POWER_BUTTON);
 
 LedActiveAnimator activeAnimator;
+LedPassiveAnimator passiveAnimator;
 
 TMRpcm tmrpcm;
 
@@ -66,6 +68,7 @@ void setup()
     digitalWrite(8, HIGH);
 
     activeAnimator.init(ledController);
+    passiveAnimator.init(ledController);
 
     onAlarmSettingSecondsChanged(alarmSettingChanged);
     OnAlarmSecondsElapsed(alarmElapsed);
@@ -116,7 +119,7 @@ void loop()
     }
     else if (s == SHOWING_TIME)
     {
-        //activeAnimator.animateAlarmFinished();
+        passiveAnimator.animate();
     }
 }
 

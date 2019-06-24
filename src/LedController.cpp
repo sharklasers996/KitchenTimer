@@ -23,6 +23,11 @@ LedController::LedController(int latchPin, int clockPin, int dataPin)
     digitalWrite(clockPin, 0);
 }
 
+void LedController::turnOff()
+{
+    shiftData(B11111111, B11000000);
+}
+
 void LedController::turnOnColumn(int column)
 {
     byte rowData = B00000000;
