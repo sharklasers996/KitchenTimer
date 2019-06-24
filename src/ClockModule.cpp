@@ -6,10 +6,6 @@
 #include "Adafruit_GFX.h"
 #include "ClockModule.h"
 
-#define TIMESETTING_HOUR 0
-#define TIMESETTING_MINUTE 1
-#define TIMESETTING_NONE 2
-
 uint8_t clockModuleState = SHOWING_TIME;
 uint8_t timeSetting = TIMESETTING_NONE;
 
@@ -54,6 +50,11 @@ void OnAlarmSecondsElapsed(GetCurrentAndDuration callback)
 byte getclockModuleState()
 {
     return clockModuleState;
+}
+
+byte getTimeSettingState()
+{
+    return timeSetting;
 }
 
 void initClock()

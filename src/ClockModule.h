@@ -18,12 +18,17 @@ typedef void (*GetCurrentAndDuration)(long current, long duration);
 #define SETTING_ALARM 4
 #define RUNNING_ALARM 5
 #define FINISHED_ALARM 6
+
+#define TIMESETTING_HOUR 0
+#define TIMESETTING_MINUTE 1
+#define TIMESETTING_NONE 2
 #endif
 
 void onAlarmSettingSecondsChanged(GetSeconds callback);
 void OnAlarmSecondsElapsed(GetCurrentAndDuration callback);
 
 byte getclockModuleState();
+byte getTimeSettingState();
 
 void initClock();
 void updateClockModule();
