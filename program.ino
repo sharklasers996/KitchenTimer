@@ -86,7 +86,7 @@ void loop()
 
     if (prPowerButton.isDark())
     {
-        Serial.println("dark!");
+        //  Serial.println("dark!");
     }
 
     if (actionButton.isPushed())
@@ -109,6 +109,14 @@ void loop()
     else if (s == SETTING_ALARM)
     {
         activeAnimator.animateAlarmSetting();
+    }
+    else if (s == FINISHED_ALARM)
+    {
+        activeAnimator.animateAlarmFinished();
+    }
+    else if (s == SHOWING_TIME)
+    {
+        //activeAnimator.animateAlarmFinished();
     }
 }
 

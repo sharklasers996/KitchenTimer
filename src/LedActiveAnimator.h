@@ -12,6 +12,7 @@ public:
     void animateAlarmElapsed();
     void updateAlarmSetting(long seconds);
     void updateAlarmElapsedSeconds(long current, long total);
+    void animateAlarmFinished();
 
 private:
     long lastRowLight;

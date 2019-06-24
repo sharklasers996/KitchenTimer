@@ -96,3 +96,35 @@ void LedActiveAnimator::updateAlarmElapsedSeconds(long current, long total)
     double secondsPassed = total - current;
     ledCountToTurnOn = 60 - (secondsPassed * ledsPerSecond);
 }
+
+long _lastAlarmFinishedAnimationAt = millis();
+byte _alarmFinishedAnimationRow = 1;
+bool _alarmFinishedDirectionUp = false;
+
+void LedActiveAnimator::animateAlarmFinished()
+{
+    long durationSinceAnimation = millis() - _lastAlarmFinishedAnimationAt;
+    if (durationSinceAnimation > _alarmFinishedAnimationRow * 5)
+    {
+        if (!_alarmFinishedDirectionUp)
+        {
+            _alarmFinishedAnimationRow++;
+            if (_alarmFinishedAnimationRow > 9)
+            {
+                _alarmFinishedDirectionUp = true;
+            }
+        }
+        else
+        {
+            _alarmFinishedAnimationRow--;
+            if (_alarmFinishedAnimationRow <= 1)
+            {
+                _alarmFinishedDirectionUp = false;
+            }
+        }
+
+        _lastAlarmFinishedAnimationAt = millis();
+    }
+
+    _controller.turnOnRow(_alarmFinishedAnimationRow);
+}
