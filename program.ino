@@ -45,6 +45,7 @@ TMRpcm tmrpcm;
 #define __CLOCK_FUNCTIONS
 typedef void (*GetSeconds)(long seconds);
 typedef void (*GetCurrentAndDuration)(long current, long duration);
+typedef void (*AlarmSettingStarted)();
 #endif
 
 #ifndef __CLOCK_STATES
@@ -61,6 +62,13 @@ typedef void (*GetCurrentAndDuration)(long current, long duration);
 #define TIMESETTING_NONE 2
 
 #endif
+
+#define MACHINE_TURNED_OFF_MANUALLY 1
+#define MACHINE_TURNED_OFF_AUTOMATICALLY 2
+
+#define MACHINE_STATE_ON 1
+#define MACHINE_STATE_OFF 0
+byte machineState;
 
 void setup()
 {
@@ -79,31 +87,81 @@ void setup()
 
     onAlarmSettingSecondsChanged(alarmSettingChanged);
     OnAlarmSecondsElapsed(alarmElapsed);
+    OnAlarmSettingStarted(alarmSettingStarted);
+
+    machineState = MACHINE_STATE_ON;
 }
 
 void loop()
 {
-    int s = getclockModuleState();
+    switch (machineState)
+    {
+    case MACHINE_STATE_ON:
+        machineOnLoop();
+        break;
+    case MACHINE_STATE_OFF:
+        machineOffLoop();
+        break;
+    }
+}
+
+void machineOffLoop()
+{
+    if (prPowerButton.isPushed())
+    {
+        machineState = MACHINE_STATE_ON;
+        return;
+    }
+
+    if (actionButton.isPushed())
+    {
+        byte timeSettingState = getTimeSettingState();
+        if (timeSettingState == TIMESETTING_MINUTE)
+        {
+            rotateTimeSetting();
+        }
+        else
+        {
+            machineState = MACHINE_STATE_ON;
+            return;
+        }
+    }
+
+    int clockState = getclockModuleState();
 
     if (timeButton.isPushed())
     {
         rotateTimeSetting();
     }
 
+    uint8_t value = rotaryEncoder.read();
+    changeTime(value);
+    updateClockModule();
+
+    buttonLed.turnOff();
+    ledController.turnOff();
+}
+
+void machineOnLoop()
+{
     if (prPowerButton.isPushed())
     {
-        Serial.println("power!");
+        machineState = MACHINE_STATE_OFF;
+        resetAlarm();
+        return;
     }
 
-    if (prPowerButton.isDark())
+    int clockState = getclockModuleState();
+
+    if (timeButton.isPushed())
     {
-        Serial.println("dark!");
+        rotateTimeSetting();
     }
 
     if (actionButton.isPushed())
     {
         byte timeSettingState = getTimeSettingState();
-        if (s == SETTING_TIME && timeSettingState == TIMESETTING_MINUTE)
+        if (clockState == SETTING_TIME && timeSettingState == TIMESETTING_MINUTE)
         {
             rotateTimeSetting();
         }
@@ -117,22 +175,22 @@ void loop()
     changeTime(value);
     updateClockModule();
 
-    if (s == RUNNING_ALARM)
+    if (clockState == RUNNING_ALARM)
     {
         activeAnimator.animateAlarmElapsed();
         buttonLed.animateTicking();
     }
-    else if (s == SETTING_ALARM)
+    else if (clockState == SETTING_ALARM)
     {
         activeAnimator.animateAlarmSetting();
         buttonLed.turnOn();
     }
-    else if (s == FINISHED_ALARM)
+    else if (clockState == FINISHED_ALARM)
     {
         activeAnimator.animateAlarmFinished();
         buttonLed.animateAlarm();
     }
-    else if (s == SHOWING_TIME || s == SETTING_TIME)
+    else if (clockState == SHOWING_TIME || clockState == SETTING_TIME)
     {
         passiveAnimator.animate();
         buttonLed.turnOff();
@@ -147,4 +205,9 @@ void alarmSettingChanged(long s)
 void alarmElapsed(long current, long total)
 {
     activeAnimator.updateAlarmElapsedSeconds(current, total);
+}
+
+void alarmSettingStarted()
+{
+    machineState = MACHINE_STATE_ON;
 }

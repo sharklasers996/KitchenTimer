@@ -10,6 +10,7 @@
 #ifndef __CLOCK_FUNCTIONS
 typedef void (*GetSeconds)(long seconds);
 typedef void (*GetCurrentAndDuration)(long current, long duration);
+typedef void (*AlarmSettingStarted)();
 #endif
 
 #ifndef __CLOCK_STATES
@@ -26,9 +27,11 @@ typedef void (*GetCurrentAndDuration)(long current, long duration);
 
 void onAlarmSettingSecondsChanged(GetSeconds callback);
 void OnAlarmSecondsElapsed(GetCurrentAndDuration callback);
+void OnAlarmSettingStarted(AlarmSettingStarted callback);
 
 byte getclockModuleState();
 byte getTimeSettingState();
+void resetAlarm();
 
 void initClock();
 void updateClockModule();

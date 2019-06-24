@@ -36,6 +36,7 @@ long totalAlarmSeconds = 0;
 
 GetSeconds alarmSettingSecondsChanged;
 GetCurrentAndDuration alarmSecondsElapsed;
+AlarmSettingStarted alarmSettingStarted;
 
 void onAlarmSettingSecondsChanged(GetSeconds callback)
 {
@@ -47,6 +48,11 @@ void OnAlarmSecondsElapsed(GetCurrentAndDuration callback)
     alarmSecondsElapsed = callback;
 }
 
+void OnAlarmSettingStarted(AlarmSettingStarted callback)
+{
+    alarmSettingStarted = callback;
+}
+
 byte getclockModuleState()
 {
     return clockModuleState;
@@ -55,6 +61,11 @@ byte getclockModuleState()
 byte getTimeSettingState()
 {
     return timeSetting;
+}
+
+void resetAlarm()
+{
+    clockModuleState = SHOWING_TIME;
 }
 
 void initClock()
@@ -143,6 +154,7 @@ void changeTime(uint8_t value)
 {
     if (value != 0 && clockModuleState == SHOWING_TIME)
     {
+        alarmSettingStarted();
         clockModuleState = SETTING_ALARM;
         alarmHours = 0;
         alarmMinutes = 0;
