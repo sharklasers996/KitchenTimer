@@ -32,8 +32,9 @@ bool PhotoResistorPushButton::isPushed()
 bool PhotoResistorPushButton::isDark()
 {
     int value = analogRead(_prPin);
-    if (value < 500 && value > 200)
+    if (value < 100 && value > 50)
     {
+        Serial.println(value);
         return true;
     }
 

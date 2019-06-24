@@ -97,7 +97,7 @@ void loop()
 
     if (prPowerButton.isDark())
     {
-        //  Serial.println("dark!");
+        Serial.println("dark!");
     }
 
     if (actionButton.isPushed())
