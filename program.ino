@@ -15,6 +15,7 @@
 #include "./src/LedActiveAnimator.h"
 #include "./src/LedPassiveAnimator.h"
 #include "./src/BigButtonLedController.h"
+#include "./src/AudioPlayer.h"
 
 #define ACTION_BUTTON_LED 8
 #define ROTARY_PIN1 0
@@ -26,6 +27,7 @@
 #define LED_CLOCK_PIN 4
 #define LED_DATA_PIN 2
 #define SD_PIN 10
+#define SPEAKER_PIN 9
 
 LedController ledController(LED_LATCH_PIN, LED_CLOCK_PIN, LED_DATA_PIN);
 RotaryEncoder rotaryEncoder(ROTARY_PIN1, ROTARY_PIN2);
@@ -39,7 +41,8 @@ LedPassiveAnimator passiveAnimator;
 
 BigButtonLedController buttonLed;
 
-TMRpcm tmrpcm;
+//TMRpcm tmrpcm1;
+AudioPlayer audio;
 
 #ifndef __CLOCK_FUNCTIONS
 #define __CLOCK_FUNCTIONS
@@ -71,11 +74,10 @@ bool allowAutomaticPowerSwitch = true;
 void setup()
 {
     Serial.begin(9600);
-
-    tmrpcm.speakerPin = 9;
-    tmrpcm.setVolume(4);
-
     SD.begin(SD_PIN);
+
+    audio.init(SPEAKER_PIN);
+
     initClock();
 
     buttonLed.init(ACTION_BUTTON_LED);
@@ -103,6 +105,8 @@ void loop()
         machineOffLoop();
         break;
     }
+
+    audio.play();
 }
 
 void machineOffLoop()
@@ -164,6 +168,7 @@ void machineOnLoop()
 
     if (actionButton.isPushed())
     {
+        audio.stopAlarm();
         byte timeSettingState = getTimeSettingState();
         if (clockState == SETTING_TIME && timeSettingState == TIMESETTING_MINUTE)
         {
@@ -191,6 +196,7 @@ void machineOnLoop()
     }
     else if (clockState == FINISHED_ALARM)
     {
+        audio.startAlarm();
         activeAnimator.animateAlarmFinished();
         buttonLed.animateAlarm();
     }

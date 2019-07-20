@@ -10,10 +10,13 @@
                 "c:\\Users\\PonasPx\\Documents\\Arduino\\libraries\\**",
                 "c:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\avr\\include\\**",
                 "c:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\avr\\include\\**",
-                "c:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\lib\\gcc\\avr\\5.4.0\\include\\"
+                "c:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\lib\\gcc\\avr\\5.4.0\\include\\",
+                "C:\\Users\\PonasPx\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.6.21\\**",
+                "C:\\Users\\PonasPx\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\**"
             ],
             "forcedInclude": [
-                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
+                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h",
+                "C:\\Users\\PonasPx\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.6.21\\cores\\arduino\\Arduino.h"
             ],
             "intelliSenseMode": "msvc-x64"
         }
