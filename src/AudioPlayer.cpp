@@ -4,38 +4,16 @@
 
 TMRpcm tmrpcm;
 long alarmStartedAt;
-int volume = 0;
 bool isStarted = false;
 
 void AudioPlayer::init(int audioPin)
 {
     tmrpcm.speakerPin = audioPin;
-    tmrpcm.setVolume(6);
+    tmrpcm.setVolume(1);
     tmrpcm.loop(true);
     tmrpcm.play("alarm.wav");
-    delay(5000);
+    delay(1000);
     tmrpcm.stopPlayback();
-}
-
-void AudioPlayer::play()
-{
-    if (!isStarted)
-    {
-        return;
-    }
-
-    long duration = millis() - alarmStartedAt;
-    if (duration > 2000 && volume < 5)
-    {
-        alarmStartedAt = millis();
-        volume++;
-        if (volume >= 7)
-        {
-            return;
-        }
-
-        tmrpcm.setVolume(volume);
-    }
 }
 
 void AudioPlayer::startAlarm()
@@ -46,16 +24,18 @@ void AudioPlayer::startAlarm()
     }
 
     isStarted = true;
-
-    volume = 0;
-    alarmStartedAt = millis();
-    tmrpcm.setVolume(volume);
+    tmrpcm.setVolume(7);
     tmrpcm.loop(true);
     tmrpcm.play("alarm.wav");
 }
 
 void AudioPlayer::stopAlarm()
 {
-    tmrpcm.stopPlayback();
+    if (!isStarted)
+    {
+        return;
+    }
+
     isStarted = false;
+    tmrpcm.stopPlayback();
 }

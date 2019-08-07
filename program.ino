@@ -168,7 +168,6 @@ void machineOnLoop()
 
     if (actionButton.isPushed())
     {
-        audio.stopAlarm();
         byte timeSettingState = getTimeSettingState();
         if (clockState == SETTING_TIME && timeSettingState == TIMESETTING_MINUTE)
         {
@@ -202,6 +201,7 @@ void machineOnLoop()
     }
     else if (clockState == SHOWING_TIME || clockState == SETTING_TIME)
     {
+        audio.stopAlarm();
         passiveAnimator.animate();
         buttonLed.turnOff();
     }
