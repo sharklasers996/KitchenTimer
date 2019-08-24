@@ -34,14 +34,13 @@ RotaryEncoder rotaryEncoder(ROTARY_PIN1, ROTARY_PIN2);
 
 PushButton timeButton(TIME_BUTTON);
 PushButton actionButton(ACTION_BUTTON);
-PhotoResistorPushButton prPowerButton(POWER_BUTTON);
+PushButton prPowerButton(POWER_BUTTON);
 
 LedActiveAnimator activeAnimator;
 LedPassiveAnimator passiveAnimator;
 
 BigButtonLedController buttonLed;
 
-//TMRpcm tmrpcm1;
 AudioPlayer audio;
 
 #ifndef __CLOCK_FUNCTIONS
@@ -71,6 +70,16 @@ typedef void (*AlarmSettingStarted)();
 byte machineState;
 bool allowAutomaticPowerSwitch = true;
 
+long lastPowerSwitchCheckAt = millis();
+// speaker
+// OUT = +
+// GND = -
+
+// big button
+// 1 = GND
+// 2 = A2
+// 3 = D8
+
 void setup()
 {
     Serial.begin(9600);
@@ -94,8 +103,6 @@ void setup()
 
 void loop()
 {
-    adjustMachineState();
-
     switch (machineState)
     {
     case MACHINE_STATE_ON:
@@ -105,8 +112,6 @@ void loop()
         machineOffLoop();
         break;
     }
-
-    audio.play();
 }
 
 void machineOffLoop()
@@ -222,25 +227,4 @@ void alarmSettingStarted()
     machineState = MACHINE_STATE_ON;
     allowAutomaticPowerSwitch = true;
     activeAnimator.reset();
-}
-
-void adjustMachineState()
-{
-    if (!allowAutomaticPowerSwitch)
-    {
-        return;
-    }
-
-    bool isNight = isNightTime();
-    int clockState = getclockModuleState();
-    bool isDark = prPowerButton.isDark();
-
-    if (isNight && isDark && clockState != RUNNING_ALARM)
-    {
-        machineState = MACHINE_STATE_OFF;
-    }
-    else
-    {
-        machineState = MACHINE_STATE_ON;
-    }
 }
