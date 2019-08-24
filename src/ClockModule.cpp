@@ -207,9 +207,9 @@ void increaseTime()
         if (alarmMinutes >= 60)
         {
             alarmHours++;
-            if (alarmHours >= 23)
+            if (alarmHours >= 24)
             {
-                alarmHours = 23;
+                alarmHours = 0;
             }
             alarmMinutes = 0;
         }
@@ -251,7 +251,7 @@ void decreaseTime()
         if (alarmMinutes < 0)
         {
             alarmHours--;
-            if (alarmHours <= 0)
+            if (alarmHours < 0)
             {
                 alarmHours = 23;
             }
