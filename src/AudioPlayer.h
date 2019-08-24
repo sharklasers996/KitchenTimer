@@ -7,5 +7,4 @@ public:
     void init(int audioPin);
     void startAlarm();
     void stopAlarm();
-    void play();
 };

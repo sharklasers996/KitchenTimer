@@ -9,7 +9,7 @@ bool isStarted = false;
 void AudioPlayer::init(int audioPin)
 {
     tmrpcm.speakerPin = audioPin;
-    tmrpcm.setVolume(1);
+    tmrpcm.setVolume(7);
     tmrpcm.loop(true);
     tmrpcm.play("alarm.wav");
     delay(1000);
